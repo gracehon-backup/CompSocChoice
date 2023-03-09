@@ -54,6 +54,9 @@ def tied_vote(vote, eliminations):
     output:
         vote: list of ints (candidates)"""
 
+    # print(vote)
+    if len(vote) == 1:
+        return None if vote[0] in eliminations else [vote[0]]
     if vote[0] in eliminations and vote[1] in eliminations:
         return None
     if vote[0] in eliminations:
@@ -114,23 +117,22 @@ def plurality(data, names, eliminations):
 
     return winners, losers
 
-def nummanipulators(data):                                                  # count everyone Derek is least prefered or not not wanted at all
+def manipulate(data,vote,manipulators, current_winner = 7, to_win = 4):                         # edit the data by changing the vote of a specified number of voters
     manipulators = 0
-    for ballot in data:
-        if (ballot[::-1][0] == 7 and len(ballot) > 1) or (7 not in ballot):
+    for idx, ballot in enumerate(data):
+        if current_winner in ballot and to_win in ballot:
+            manipulator = ballot.index(current_winner) > ballot.index(to_win)
+        else:
+            manipulator = current_winner not in ballot and to_win in ballot
+
+        if manipulator:
+            data[idx] = vote
+            print(data[idx])
+            exit(0)
             manipulators += 1
-    return manipulators
+    return data, 
 
-def bruteforce(data,vote,manipulators):                                     # edit the data by changing the vote of a specified number of voters
-    for ballot in data:
-        if (ballot[::-1][0] == 7 and len(ballot) > 1) or (7 not in ballot): # just the Derek dislikers
-            data[data.index(ballot)] = vote
-            manipulators -= 1
-        if manipulators == 0:
-            break
-    return data
-
-def STV(data, names, eliminations):
+def STV(data, names, eliminations=[]):
     """
     Single Transferable Vote
     input:
@@ -139,7 +141,6 @@ def STV(data, names, eliminations):
         eliminations: list of ints (candidates to be eliminated)
     """
     winners, losers = plurality(data, names, eliminations)
-    #print(f"Eliminated before: {eliminations}, eliminated now: {losers}")
     eliminations += losers                                      # Add the eliminated candidates to the list of eliminations
     if len(losers) == 0: 
         return winners                                          # No more candidates to eliminate, final round
@@ -149,21 +150,23 @@ def STV(data, names, eliminations):
 if __name__ == "__main__":
     start = t.time()
     alternatives = [0,1,2,3,4,5,6,8]
-    data, names = load_data()
+    org_data, names = load_data()
+    current_winner = STV(org_data, names)
+    manipulated_winner = [4]
     fields = ['Winner', 'NumManipulators', 'Ballot']
     output = []
-    minmanipulators = nummanipulators(data)
-    combinations = list(itertools.permutations(alternatives))       # all possible ballots without Derek
+    minmanipulators = len(org_data) // 5
+    combinations = itertools.permutations(alternatives)             # all possible ballots without Derek
     for combination in combinations:                                # loop through possible insincere ballots
-        for manipulator in range(minmanipulators,0,-1):             # loop through number of manipulators
-            data = bruteforce(data,list(combination),manipulator)
+        for manipulator in range(minmanipulators, 0, -1):           # loop through number of manipulators
+            print(f"\rmanipulator: {manipulator}, Minmanipulator: {minmanipulators}", end="")
+            data = manipulate(org_data.copy(), list(combination), manipulator, current_winner, manipulated_winner)
             result = STV(data, names, [9,10])
             if 7 not in result:                                     # Derek deposed
                 minmanipulators = manipulator                       # set new best minimum
-                data, names = load_data()
                 output.append([result[0], minmanipulators, list(combination)])
+                print()
                 continue 
-            data, names = load_data()
             break                                                   # for lowest minimum number manipulators, Derek still wins, try next combo
     with open('manipulation.csv', 'w') as f:                        # save results to csv 
         write = csv.writer(f)
