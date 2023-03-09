@@ -1,9 +1,10 @@
 from os import path, sep, listdir
 import re
+import itertools
 
 cwd = path.dirname(path.abspath(__file__))
 
-DEBUGGING = True
+DEBUGGING = False
 
 def load_data(filename="00016-00000001.toi"):
     """
@@ -111,8 +112,23 @@ def plurality(data, names, eliminations):
 
     return winners, losers
 
+def nummanipulators(data):
+    manipulators = 0
+    for ballot in data:
+        if (ballot[::-1][0] == 7 and len(ballot) > 1) or (7 not in ballot):
+            manipulators += 1
+    return manipulators
 
-def STV(data, names, eliminations=[]):
+def bruteforce(data,vote,manipulators):
+    for ballot in data:
+        if (ballot[::-1][0] == 7 and len(ballot) > 1) or (7 not in ballot):
+            data[data.index(ballot)] = vote
+            manipulators -= 1
+        if manipulators == 0:
+            break
+    return data
+
+def STV(data, names, eliminations):
     """
     Single Transferable Vote
     input:
@@ -121,7 +137,7 @@ def STV(data, names, eliminations=[]):
         eliminations: list of ints (candidates to be eliminated)
     """
     winners, losers = plurality(data, names, eliminations)
-    print(f"Eliminated before: {eliminations}, eliminated now: {losers}")
+    #print(f"Eliminated before: {eliminations}, eliminated now: {losers}")
     eliminations += losers                                      # Add the eliminated candidates to the list of eliminations
     if len(losers) == 0: 
         return winners                                          # No more candidates to eliminate, final round
@@ -129,5 +145,19 @@ def STV(data, names, eliminations=[]):
 
 
 if __name__ == "__main__":
+    alternatives = [0,1,2,3,4,5,6,8]
     data, names = load_data()
-    print(f"WINNER: {STV(data, names)}")
+    minmanipulators = nummanipulators(data)
+    combinations = list(itertools.permutations(alternatives))
+    print("looping through combinations:")
+    for combination in combinations:
+        for manipulator in range(minmanipulators,0,-1): 
+            data = bruteforce(data,list(combination),manipulator)
+            result = STV(data, names, [9,10])
+            if 7 not in result:
+                minmanipulators = manipulator  
+                data, names = load_data()
+                continue
+            data, names = load_data()
+            break
+    print(minmanipulators)                     
