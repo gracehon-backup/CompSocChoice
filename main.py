@@ -1,6 +1,8 @@
 from os import path, sep, listdir
 import re
 import itertools
+import time as t 
+import csv
 
 cwd = path.dirname(path.abspath(__file__))
 
@@ -112,16 +114,16 @@ def plurality(data, names, eliminations):
 
     return winners, losers
 
-def nummanipulators(data):
+def nummanipulators(data):                                                  # count everyone Derek is least prefered or not not wanted at all
     manipulators = 0
     for ballot in data:
         if (ballot[::-1][0] == 7 and len(ballot) > 1) or (7 not in ballot):
             manipulators += 1
     return manipulators
 
-def bruteforce(data,vote,manipulators):
+def bruteforce(data,vote,manipulators):                                     # edit the data by changing the vote of a specified number of voters
     for ballot in data:
-        if (ballot[::-1][0] == 7 and len(ballot) > 1) or (7 not in ballot):
+        if (ballot[::-1][0] == 7 and len(ballot) > 1) or (7 not in ballot): # just the Derek dislikers
             data[data.index(ballot)] = vote
             manipulators -= 1
         if manipulators == 0:
@@ -145,19 +147,27 @@ def STV(data, names, eliminations):
 
 
 if __name__ == "__main__":
+    start = t.time()
     alternatives = [0,1,2,3,4,5,6,8]
     data, names = load_data()
+    fields = ['Winner', 'NumManipulators', 'Ballot']
+    output = []
     minmanipulators = nummanipulators(data)
-    combinations = list(itertools.permutations(alternatives))
-    print("looping through combinations:")
-    for combination in combinations:
-        for manipulator in range(minmanipulators,0,-1): 
+    combinations = list(itertools.permutations(alternatives))       # all possible ballots without Derek
+    for combination in combinations:                                # loop through possible insincere ballots
+        for manipulator in range(minmanipulators,0,-1):             # loop through number of manipulators
             data = bruteforce(data,list(combination),manipulator)
             result = STV(data, names, [9,10])
-            if 7 not in result:
-                minmanipulators = manipulator  
+            if 7 not in result:                                     # Derek deposed
+                minmanipulators = manipulator                       # set new best minimum
                 data, names = load_data()
-                continue
+                output.append([result[0], minmanipulators, list(combination)])
+                continue 
             data, names = load_data()
-            break
-    print(minmanipulators)                     
+            break                                                   # for lowest minimum number manipulators, Derek still wins, try next combo
+    with open('manipulation.csv', 'w') as f:                        # save results to csv 
+        write = csv.writer(f)
+        write.writerow(fields)
+        write.writerows(output)                                                       
+    end = t.time()
+    print(f"Time taken: {(end-start)}s")        
