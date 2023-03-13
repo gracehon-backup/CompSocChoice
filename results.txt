@@ -1,0 +1,65 @@
+Original winner: [0]
+Eliminations: [], New ballot: []
+Eliminations: [0], New ballot: [1]
+Eliminations: [0], New ballot: [2]
+Eliminations: [0, 1], New ballot: [2]
+Eliminations: [1], New ballot: [2]
+Eliminations: [1, 0], New ballot: [2]
+Eliminations: [0], New ballot: [3]
+Eliminations: [0, 1], New ballot: [3]
+Eliminations: [0, 1, 2], New ballot: [3]
+Eliminations: [0, 2], New ballot: [3]
+Eliminations: [0, 2, 1], New ballot: [3]
+Eliminations: [1], New ballot: [3]
+Eliminations: [1, 0], New ballot: [3]
+Eliminations: [1, 0, 2], New ballot: [3]
+Eliminations: [1, 2], New ballot: [3]
+Eliminations: [1, 2, 0], New ballot: [3]
+Eliminations: [2], New ballot: [3]
+Eliminations: [2, 0], New ballot: [3]
+Eliminations: [2, 0, 1], New ballot: [3]
+Eliminations: [2, 1], New ballot: [3]
+Eliminations: [2, 1, 0], New ballot: [3]
+3
+['b'] - [] <= -50
+['c'] - [] <= -40
+['c'] - ['b'] <= -90
+Elimination order: ['a', 'b', 'c']
+Ballot: ['d']
+
+3
+['b'] - [] <= -50
+['c'] - [] <= -40
+['b'] - ['c'] <= 90
+Elimination order: ['a', 'c', 'b']
+Ballot: ['d']
+
+3
+['c'] - ['b'] <= 10
+[] - ['b', 'c'] <= 10
+['c'] - [] <= 10
+Elimination order: ['b', 'a', 'c']
+Ballot: ['d']
+
+3
+['c'] - ['b'] <= 10
+[] - ['b', 'c'] <= 10
+[] - ['b', 'c'] <= 70
+Elimination order: ['b', 'c', 'a']
+Ballot: ['d']
+
+3
+['b'] - ['c'] <= -10
+['b'] - [] <= -50
+[] - ['b', 'c'] <= 20
+Elimination order: ['c', 'a', 'b']
+Ballot: ['d']
+
+3
+['b'] - ['c'] <= -10
+[] - ['b', 'c'] <= 70
+[] - ['b', 'c'] <= 70
+Elimination order: ['c', 'b', 'a']
+Ballot: ['d']
+
+6

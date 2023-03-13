@@ -117,8 +117,9 @@ def plurality(data, names, eliminations):
 
     return winners, losers
 
-def manipulate(data,vote,manipulators, current_winner = 7, to_win = 4):                         # edit the data by changing the vote of a specified number of voters
-    manipulators = 0
+
+def find_manipulators(data, current_winner = 7, to_win = 4):
+    manipulators = []
     for idx, ballot in enumerate(data):
         if current_winner in ballot and to_win in ballot:
             manipulator = ballot.index(current_winner) > ballot.index(to_win)
@@ -126,11 +127,14 @@ def manipulate(data,vote,manipulators, current_winner = 7, to_win = 4):         
             manipulator = current_winner not in ballot and to_win in ballot
 
         if manipulator:
-            data[idx] = vote
-            print(data[idx])
-            exit(0)
-            manipulators += 1
-    return data, 
+            manipulators.append(idx)
+    return manipulators
+
+def manipulate(data, new_vote, manipulators):                         # edit the data by changing the vote of a specified number of voters
+    for manipulator in manipulators:
+        data[manipulator] = new_vote
+
+    return data
 
 def STV(data, names, eliminations=[]):
     """
@@ -149,28 +153,62 @@ def STV(data, names, eliminations=[]):
 
 if __name__ == "__main__":
     start = t.time()
-    alternatives = [0,1,2,3,4,5,6,8]
     org_data, names = load_data()
-    current_winner = STV(org_data, names)
-    manipulated_winner = [4]
-    fields = ['Winner', 'NumManipulators', 'Ballot']
-    output = []
-    minmanipulators = len(org_data) // 5
-    combinations = itertools.permutations(alternatives)             # all possible ballots without Derek
-    for combination in combinations:                                # loop through possible insincere ballots
-        for manipulator in range(minmanipulators, 0, -1):           # loop through number of manipulators
-            print(f"\rmanipulator: {manipulator}, Minmanipulator: {minmanipulators}", end="")
-            data = manipulate(org_data.copy(), list(combination), manipulator, current_winner, manipulated_winner)
-            result = STV(data, names, [9,10])
-            if 7 not in result:                                     # Derek deposed
-                minmanipulators = manipulator                       # set new best minimum
-                output.append([result[0], minmanipulators, list(combination)])
-                print()
-                continue 
-            break                                                   # for lowest minimum number manipulators, Derek still wins, try next combo
-    with open('manipulation.csv', 'w') as f:                        # save results to csv 
-        write = csv.writer(f)
-        write.writerow(fields)
-        write.writerows(output)                                                       
-    end = t.time()
-    print(f"Time taken: {(end-start)}s")        
+    alternatives = [i for i in range(len(names))]
+    alternatives = [0,1,2,3,4,5,6,7,8,9,10]
+    original_winner = STV(org_data, names)[0]
+    print(f"Original winner: {original_winner}")
+    manipulators = []
+    for i in alternatives:
+        manipulators.append(find_manipulators(org_data, original_winner, i))
+    
+    for candidate, manipulator in enumerate(manipulators):
+        if candidate == original_winner:
+            continue
+        ballot_combinations = itertools.permutations(alternatives, 6)
+        # for nr_manipulators in range()
+        for jdx, ballot_combination in enumerate(ballot_combinations):
+            if candidate not in ballot_combination or original_winner in ballot_combination:
+                continue
+            print(f"\rCandidate {candidate},Ballot {ballot_combination}", end="")
+            data = manipulate(org_data.copy(), ballot_combination, manipulator)
+            winner = STV(data, names)
+            # print(f"\rwinner: {winner}", end="    ")
+            if candidate in winner:
+                print(f"Manipulator: {manipulator}, Ballot: {ballot_combination}, Winner: {winner}")
+                end = t.time()
+                print(f"Time taken: {(end-start)}s")        
+                print("\n")
+                exit(0)
+
+
+
+# if __name__ == "__main__":
+#     start = t.time()
+#     alternatives = [0,1,2,3,4,5,6,8]
+#     org_data, names = load_data()
+#     current_winner = STV(org_data, names)
+#     manipulated_winner = [4]
+#     for i in range(11):
+#         print(find_amount_of_manipulators(org_data, current_winner, i))
+#     fields = ['Winner', 'NumManipulators', 'Ballot']
+#     output = []
+#     minmanipulators = len(org_data) // 5
+#     combinations = itertools.permutations(alternatives)             # all possible ballots without Derek
+#     for combination in combinations:                                # loop through possible insincere ballots
+#         for manipulator in range(minmanipulators, 0, -1):           # loop through number of manipulators
+#             print(f"\rmanipulator: {manipulator}, Minmanipulator: {minmanipulators}", end="")
+#             data = manipulate(org_data.copy(), list(combination), manipulator, current_winner, manipulated_winner)
+#             result = STV(data, names, [9,10])
+#             if 7 not in result:                                     # Derek deposed
+#                 minmanipulators = manipulator                       # set new best minimum
+#                 output.append([result[0], minmanipulators, list(combination)])
+#                 print()
+#                 continue 
+#             break                                                   # for lowest minimum number manipulators, Derek still wins, try next combo
+#     with open('manipulation.csv', 'w') as f:                        # save results to csv 
+#         write = csv.writer(f)
+#         write.writerow(fields)
+#         write.writerows(output)                                                       
+#     end = t.time()
+#     print(f"Time taken: {(end-start)}s")        

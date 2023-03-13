@@ -1,0 +1,10 @@
+# FILE NAME: Manipulatable
+# NUMBER ALTERNATIVES: 4
+# ALTERNATIVE NAME 1: Jackie Kasabach
+# ALTERNATIVE NAME 2: Jack Johnson
+# ALTERNATIVE NAME 3: Adam Frisch
+# ALTERNATIVE NAME 4: Torre
+100: 1,2,3,4
+50: 2,3,4,1
+60: 3,4,1,2
+60: 4,1,2,3
