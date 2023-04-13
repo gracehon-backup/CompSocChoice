@@ -113,40 +113,13 @@ def borda(data, names):
 
 def copeland(data,names):
 
-    candidate_wins = [[0 for i in range(len(names))] for j in range(len(names))] # start with empty matrix
+    score = [0] * len(names) # start with empty list
 
-    for i in names:
-        for j in names[names.index(i)+1:]: # pairwise comparison of candidates
-            if j == i:
-                continue
-            wins_i = 0
-            wins_j = 0
-            for ballot in data:            # count wins against each other
-                if i in ballot and j in ballot:
-                    if ballot.index(i) < ballot.index(j):
-                        wins_i += 1
-                    else:
-                        wins_j += 1
-                elif i in ballot:
-                    wins_i += 1
-                elif j in ballot:
-                    wins_j += 1
-                       
-            if wins_i > wins_j:          # mark winner in matrix with 1/0.5/0 rule
-                candidate_wins[i][j] = 1
-            elif wins_i < wins_j:
-                candidate_wins[j][i] = 1
-            else:
-                candidate_wins[i][j] = 0.5
-                candidate_wins[j][i] = 0.5
-    
-    highest = 0
-    winners = []
-    for idx, row in enumerate(candidate_wins):
-        if sum(row) == highest:     # matches highest score, append to winners
-            winners.append(idx)
-        if sum(row) > highest:      # new highest score, wipe winners and update new best
-            winners = [idx]
-            highest = sum(row)
+    for ballot in data: 
+        for idx, vote in enumerate(ballot): 
+            score[vote] += len(names) - 1 - 2*idx  # increase score by how many they're above vs how many are ranked higher
+        for i in names:
+            if i not in ballot:
+                score[i] -= len(ballot)       # un voted for is tied bottom, subtract number above from score
 
-    return winners
+    return([idx for idx, votes in enumerate(score) if votes == max(score)]) # return winner
