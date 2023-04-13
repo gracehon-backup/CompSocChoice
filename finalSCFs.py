@@ -1,4 +1,7 @@
+from finalAux import *
+
 def plurality(data, names, eliminations):
+
     """
     Plurality voting
     input:
@@ -10,6 +13,7 @@ def plurality(data, names, eliminations):
         losers: list of ints (candidate(s) with least votes)
     """
     nr_votes = [0] * len(names)
+
     for ballot in data:                                         # For each ballot
         for candidate in ballot:                                # For first eligible candidate in the vote
             if type(candidate) == list:                         # In case of Split vote
@@ -42,6 +46,7 @@ def plurality(data, names, eliminations):
 
 
 def STV(data, names, eliminations=[]):
+
     """
     Single Transferable Vote
     input:
@@ -56,8 +61,92 @@ def STV(data, names, eliminations=[]):
     return STV(data, names, eliminations) 
 
 def approval(data,names):
-    nr_votes = [0] * len(names)
+    
+    nr_votes = [0] * len(names)                                 # everyone starts with zero votes
+
     for ballot in data:
         for vote in ballot:
-            nr_votes[vote] += 1
-    return([idx for idx, votes in enumerate(nr_votes) if votes == max(nr_votes)])
+            nr_votes[vote] += 1                                 # everytime someone approved, they gain a vote
+
+    return([idx for idx, votes in enumerate(nr_votes) if votes == max(nr_votes)]) # return winner
+
+def condorcet(data,names):
+
+    candidate_wins = [[0 for i in range(len(names))] for j in range(len(names))] # start with empty matrix
+
+    for i in names:
+        for j in names[names.index(i)+1:]: # pairwise comparison of candidates
+            if j == i:
+                continue
+            wins_i = 0
+            wins_j = 0
+            for ballot in data:            # count wins against each other
+                if i in ballot and j in ballot:
+                    if ballot.index(i) < ballot.index(j):
+                        wins_i += 1
+                    else:
+                        wins_j += 1
+                elif i in ballot:
+                    wins_i += 1
+                elif j in ballot:
+                    wins_j += 1                      
+            if wins_i > wins_j:          # mark winner in matrix
+                candidate_wins[i][j] = 1
+            elif wins_i < wins_j:
+                candidate_wins[j][i] = 1
+
+    for row in candidate_wins:           # find candidate that one against all others
+        if sum(row) == len(names) - 1:
+            return [candidate_wins.index(row)]
+    
+    return names # otherwise return A
+
+def borda(data, names):
+
+    points = [0] * len(names) # empty list of points
+
+    for ballot in data:
+        for idx, vote in enumerate(ballot):
+            points[vote] += len(names) - 1 - idx # give options n-1,n-2... points based on ranking
+
+    return([idx for idx, votes in enumerate(points) if votes == max(points)]) # return winner
+
+def copeland(data,names):
+
+    candidate_wins = [[0 for i in range(len(names))] for j in range(len(names))] # start with empty matrix
+
+    for i in names:
+        for j in names[names.index(i)+1:]: # pairwise comparison of candidates
+            if j == i:
+                continue
+            wins_i = 0
+            wins_j = 0
+            for ballot in data:            # count wins against each other
+                if i in ballot and j in ballot:
+                    if ballot.index(i) < ballot.index(j):
+                        wins_i += 1
+                    else:
+                        wins_j += 1
+                elif i in ballot:
+                    wins_i += 1
+                elif j in ballot:
+                    wins_j += 1
+                       
+            if wins_i > wins_j:          # mark winner in matrix with 1/0.5/0 rule
+                candidate_wins[i][j] = 1
+            elif wins_i < wins_j:
+                candidate_wins[j][i] = 1
+            else:
+                candidate_wins[i][j] = 0.5
+                candidate_wins[j][i] = 0.5
+    
+    highest = 0
+    winners = []
+    for idx, row in enumerate(candidate_wins):
+        if sum(row) == highest:     # matches highest score, append to winners
+            winners.append(idx)
+        if sum(row) > highest:      # new highest score, wipe winners and update new best
+            winners = [idx]
+            highest = sum(row)
+
+    return winners
