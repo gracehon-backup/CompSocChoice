@@ -1,6 +1,7 @@
 import random
 from enum import Enum
 from finalSCFs import *
+from welfares import *
 
 random.seed(1)
 
@@ -59,6 +60,8 @@ class Person:
             return self.rankings
         elif ballot_type == BallotType.PARTIAL_RANKING:
             return [x for x in self.rankings if x in self.approves]
+    
+    def satisfaction(self, projects):
 
  
 # Class representing a project
@@ -80,6 +83,8 @@ class Project:
     def __str__(self) -> str:
         return self.instance
 
+    
+
 def main():
     budget = 25000
     nr_projects = 100
@@ -99,6 +104,7 @@ def main():
     # Create projects
     projects = []
     size_probabilities = [0.4, 0.2, 0.05, 0.05, 0.3]
+    # Fix this so the total cost of all projects remains equal
     possible_costs = [200, 500, 1000, 1500, 2000, 5000, 8000, 10000, None]
     for i in range(nr_projects):
         # Pick a random number of neighborhoods to support the project
