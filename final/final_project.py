@@ -36,7 +36,7 @@ class Person:
     def project_approval(self, projects):
         for project in projects:
             approval = sum([self.attributes[i] * project.attributes[i] for i in range(4)])
-            if self.neighborhood in project.neighborhoods:
+            if self.neighborhood not in project.neighborhoods:
                 approval *= 0.5
             
             if approval > self.required_approval:
@@ -131,7 +131,7 @@ def main():
     partial_approval_profile = [x.get_ballot(BallotType.PARTIAL_RANKING) for x in Person.INSTANCES]
     print(partial_approval_profile[1])
     print(len(partial_approval_profile))
-    print(borda(partial_approval_profile,[0,1,2,3,4,5,6,7,8,9]))
+    print(STV(partial_approval_profile,[0,1,2,3,4,5,6,7,8,9]))
 
     
 
