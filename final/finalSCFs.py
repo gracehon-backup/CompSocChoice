@@ -94,12 +94,18 @@ def condorcet(data,names):
                 candidate_wins[i][j] = 1
             elif wins_i < wins_j:
                 candidate_wins[j][i] = 1
-
-    for row in candidate_wins:           # find candidate that one against all others
-        if sum(row) == len(names) - 1:
-            return [candidate_wins.index(row)]
     
-    return names # otherwise return A
+    results = []
+    for row in candidate_wins:
+        results.append(sum(row))
+    
+    
+
+    # for row in candidate_wins:           # find candidate that one against all others
+    #     if sum(row) == len(names) - 1:
+    #         return [candidate_wins.index(row)]
+    
+    # return names # otherwise return A
 
 def borda(data, names):
 
@@ -109,7 +115,7 @@ def borda(data, names):
         for idx, vote in enumerate(ballot):
             points[vote] += len(names) - 1 - idx # give options n-1,n-2... points based on ranking
 
-    return([idx for idx, votes in enumerate(points) if votes == max(points)]) # return winner
+    return([x[1] for x in sorted(((value, index) for index, value in enumerate(points)), reverse=True)])
 
 def copeland(data,names):
 
@@ -122,4 +128,4 @@ def copeland(data,names):
             if i not in ballot:
                 score[i] -= len(ballot)       # un voted for is tied bottom, subtract number above from score
 
-    return([idx for idx, votes in enumerate(score) if votes == max(score)]) # return winner
+    return([x[1] for x in sorted(((value, index) for index, value in enumerate(score)), reverse=True)])
