@@ -1,12 +1,7 @@
 from finalAux import *
 from collections import Counter
 
-# Contains the following SCF's
-
-
-
-def plurality(data, names, eliminations):
-
+def plurality(data, names, eliminations=[]):
     """
     Plurality voting
     input:
@@ -48,7 +43,6 @@ def plurality(data, names, eliminations):
                                               and i not in winners]
 
     return winners, losers
-
 
 def STV(data, names, eliminations=[]):
 
@@ -161,6 +155,6 @@ def equalshares(data,projects):
     print(scores) 
     print(supporters)
     
-    
+
 
     return
