@@ -100,7 +100,7 @@ def condorcet(data,names):
     
     results = []
     i = 1
-    while len(results) == 0 and i < len(names):    
+    while len(results) == 0 and i <= len(names)/2:    
         for row in candidate_wins:
             if sum(row) == len(names) - i:
                 results.append(candidate_wins.index(row)) 
