@@ -99,22 +99,11 @@ def condorcet(data,names):
                 candidate_wins[j][i] = 1
     
     results = []
-    # condorcet_winner_exists = False
     for row in candidate_wins:
-        results.append(sum(row))
-    #     if sum(row) == len(names) - 1:
-    #         print(f"Condorcet winner = {candidate_wins.index(row)}")
-    #         condorcet_winner_exists = True
-    # if not condorcet_winner_exists:
-    #     print("No True Condorcet winner exists")
-
-    return([x[1] for x in sorted(((value, index) for index, value in enumerate(results)), reverse=True)])
-
-    # for row in candidate_wins:           # find candidate that one against all others
-    #     if sum(row) == len(names) - 1:
-    #         return [candidate_wins.index(row)]
-    
-    # return names # otherwise return A
+        if sum(row) == len(names) - 1:
+            results.append(candidate_wins.index(row)) 
+            
+    return results 
 
 def borda(data, names):
 
