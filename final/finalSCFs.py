@@ -136,24 +136,29 @@ def copeland(data,names):
 
     return([x[1] for x in sorted(((value, index) for index, value in enumerate(score)), reverse=True)])
 
-def equalshares(data,projects):
+def equalshares(projects):
 
-    sorteddata = data.copy()
+    # sorteddata = data.copy()
 
-    for i in range(len(sorteddata)):
-        sorteddata[i].sort()
-    profile = map(tuple,sorteddata)
-    counts = Counter(profile)
-    list_counts = [list(i) for i in counts.items()]
+    # for i in range(len(sorteddata)):
+    #     sorteddata[i].sort()
+    # profile = map(tuple,sorteddata)
+    # counts = Counter(profile)
+    # list_counts = [list(i) for i in counts.items()]
+    # for i in list_counts:
+    #     i[0] = list(i[0])
+    #     i.append(10)
 
     scores = []
-    supporters = []
     for idx in range(len(projects)):
         scores.append(projects[idx].cost/len(projects[idx].supporters))
-        supporters.append(len(projects[idx].supporters))
-    
-    choice = supporters.index(max(supporters))
-    scores[choice]
+    print(scores)
+
+
+
+
+
+  
 
 
     return

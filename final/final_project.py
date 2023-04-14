@@ -1,8 +1,11 @@
 import random
 from enum import Enum
 from finalSCFs import *
+<<<<<<< HEAD
 from welfares import *
 from numpy import std, mean
+=======
+>>>>>>> f5c225e708ad761329d2955f6c13936ad6ccae64
 
 random.seed(1)
 
@@ -121,6 +124,7 @@ def applyBudgetMaximally(outputSCF,budget):
         affordable_projects.append(project)
     return affordable_projects
 
+<<<<<<< HEAD
     
 
 def single_simulation(score_dict):
@@ -140,6 +144,9 @@ def single_simulation(score_dict):
         "copeland": welfares.copy(),
         "equalshares": welfares.copy()
     }
+=======
+def main():
+>>>>>>> f5c225e708ad761329d2955f6c13936ad6ccae64
     budget = 25000
     nr_projects = 20
     # Create 5 neighborhoods
@@ -158,7 +165,6 @@ def single_simulation(score_dict):
     # Create projects
     projects = []
     size_probabilities = [0.4, 0.2, 0.05, 0.05, 0.3]
-    # Fix this so the total cost of all projects remains equal
     possible_costs = [200, 500, 1000, 1500, 2000, 5000, 8000, 10000, None]
     for i in range(nr_projects):
         # Pick a random number of neighborhoods to support the project
@@ -192,7 +198,6 @@ def single_simulation(score_dict):
     partial_approval_profile = [x.get_ballot(BallotType.PARTIAL_RANKING) for x in Person.INSTANCES]
     #print(STV(partial_approval_profile,list(range(0,nr_projects))))
     equalshares(partial_approval_profile,Project.INSTANCES)
-
        
 if __name__=="__main__":
     welfares = {
