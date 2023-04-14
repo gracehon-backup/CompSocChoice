@@ -29,6 +29,7 @@ class Person:
         self.project_approvals = {}
         self.approves = []
         self.rankings = []
+        self.budget = 0
         Person.INSTANCES.append(self)
         Person.NR_INSTANCES += 1
 
@@ -79,6 +80,9 @@ class Project:
 
     def __str__(self) -> str:
         return self.instance
+    
+    def is_affordable(self) -> bool:
+        return sum([x.budget for x in self.supporters]) >= self.cost
 
 def applyBudget(outputSCF,budget):
     affordable_projects = []
@@ -100,7 +104,7 @@ def applyBudgetMaximally(outputSCF,budget):
 
 def main():
     budget = 25000
-    nr_projects = 100
+    nr_projects = 20
     # Create 5 neighborhoods
     neighborhoods = []
     neighborhoods.append(Neighborhood(200, [0.4, 0.2, 0.1, -0.1], 0.1))
@@ -148,8 +152,8 @@ def main():
         print(f"Project {project.instance} has {len(project.supporters)} supporters")
 
     partial_approval_profile = [x.get_ballot(BallotType.PARTIAL_RANKING) for x in Person.INSTANCES]
-    print(STV(partial_approval_profile,list(range(0,nr_projects))))
-
+    #print(STV(partial_approval_profile,list(range(0,nr_projects))))
+    equalshares(partial_approval_profile,Project.INSTANCES)
        
 if __name__=="__main__":
     main()

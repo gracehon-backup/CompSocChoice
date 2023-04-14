@@ -1,4 +1,5 @@
 from finalAux import *
+from collections import Counter
 
 def plurality(data, names, eliminations):
 
@@ -101,7 +102,7 @@ def condorcet(data,names):
     for row in candidate_wins:
         results.append(sum(row))
         if sum(row) == len(names) - 1:
-            print(f"True Condorcet winner = {candidate_wins.index(row)}")
+            print(f"Condorcet winner = {candidate_wins.index(row)}")
             condorcet_winner_exists = True
     if not condorcet_winner_exists:
         print("No True Condorcet winner exists")
@@ -136,3 +137,26 @@ def copeland(data,names):
                 score[i] -= len(ballot)       # un voted for is tied bottom, subtract number above from score
 
     return([x[1] for x in sorted(((value, index) for index, value in enumerate(score)), reverse=True)])
+
+def equalshares(data,projects):
+
+    sorteddata = data.copy()
+
+    for i in range(len(sorteddata)):
+        sorteddata[i].sort()
+    profile = map(tuple,sorteddata)
+    counts = Counter(profile)
+    list_counts = [list(i) for i in counts.items()]
+    print(list_counts)
+
+    scores = []
+    supporters = []
+    for idx in range(len(projects)):
+        scores.append(projects[idx].cost/len(projects[idx].supporters))
+        supporters.append(len(projects[idx].supporters))
+    print(scores) 
+    print(supporters)
+    
+    
+
+    return
