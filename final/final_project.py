@@ -1,9 +1,9 @@
 import random
-import enum
+from enum import Enum
 
 random.seed(1)
 
-class BallotType(enum):
+class BallotType(Enum):
     APPROVAL: 1
     FULL_RANKING: 2
     PARTIAL_RANKING: 3
@@ -19,6 +19,7 @@ class Neighborhood:
 
 # Class representing a person with a political preference based on 4 attributes
 class Person:
+    INSTANCES = []
     def __init__(self, neighborhood) -> None:
         self.neighborhood = neighborhood
         self.attributes = {i: random.gauss(neighborhood.preferences[i], neighborhood.cohesion) for i in range(4)}
@@ -26,6 +27,7 @@ class Person:
         self.project_approvals = {}
         self.approves = []
         self.rankings = []
+        Person.INSTANCES.append(self)
 
     def project_approval(self, projects):
         for project in projects:
@@ -44,7 +46,6 @@ class Person:
         # Sort the projects by approval
         self.rankings = sorted(self.project_approvals.items(), key=lambda x: x[1], reverse=True)
         self.rankings = [x.instance for x, _ in self.rankings]
-        print(self.rankings)
     
     def get_ballot(self, ballot_type: BallotType):
         if ballot_type == BallotType.APPROVAL:
@@ -91,7 +92,6 @@ def main():
     for i in range(nr_projects):
         # Pick a random number of neighborhoods to support the project
         project_size = random.random()
-        print(project_size)
         for n, j in enumerate(size_probabilities):
             project_size -= j
             if project_size < 0:
@@ -111,13 +111,12 @@ def main():
     print("Projects created")
 
     # Have each person project their approval for each project
-    for neighborhood in neighborhoods:
-        for person in neighborhood.inhabitants:
-            person.project_approval(projects)
-    
-    for project in projects:
-        print(f"Cost: {project.cost}, supporters: {len(project.supporters)}")
+    for person in Person.INSTANCES:
+        person.project_approval(projects)
 
+    for project in projects:
+        print(f"Project {project.instance} has {len(project.supporters)} supporters")
+    
 
 if __name__=="__main__":
     main()
