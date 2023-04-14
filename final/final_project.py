@@ -1,6 +1,12 @@
 import random
+import enum
 
 random.seed(1)
+
+class BallotType(enum):
+    APPROVAL: 1
+    FULL_RANKING: 2
+    PARTIAL_RANKING: 3
 
 # Class representing a neighborhood
 class Neighborhood:
@@ -18,6 +24,7 @@ class Person:
         self.attributes = {i: random.gauss(neighborhood.preferences[i], neighborhood.cohesion) for i in range(4)}
         self.required_approval = random.uniform(0, 0.5)
         self.project_approvals = {}
+        self.approves = []
         self.rankings = []
 
     def project_approval(self, projects):
@@ -28,6 +35,7 @@ class Person:
             
             if approval > self.required_approval:
                 project.add_supporter(self)
+                self.approves.append(project.instance)
             
             self.project_approvals[project] = approval
         if len(self.project_approvals) == 0:
@@ -38,9 +46,15 @@ class Person:
         self.rankings = [x.instance for x, _ in self.rankings]
         print(self.rankings)
     
-    def get_ballot
+    def get_ballot(self, ballot_type: BallotType):
+        if ballot_type == BallotType.APPROVAL:
+            return self.approves
+        elif ballot_type == BallotType.FULL_RANKING:
+            return self.rankings
+        elif ballot_type == BallotType.PARTIAL_RANKING:
+            return [x for x in self.rankings if x in self.approves]
 
-
+ 
 # Class representing a project
 class Project:
     NR_INSTANCES = 0
