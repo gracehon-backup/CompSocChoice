@@ -11,7 +11,7 @@ class BallotType(Enum):
 
 # Class representing a neighborhood
 class Neighborhood:
-    def __init__(self, nr_inhabitants, preferences, cohesion) -> None:
+    def __init__(self, nr_inhabitants, preferences, cohesion, budget) -> None:
         self.preferences = preferences
         self.cohesion = cohesion
         self.inhabitants = [Person(self) for i in range(nr_inhabitants)]
@@ -21,14 +21,17 @@ class Neighborhood:
 # Class representing a person with a political preference based on 4 attributes
 class Person:
     INSTANCES = []
-    def __init__(self, neighborhood) -> None:
+    NR_INSTANCES = 0
+    def __init__(self, neighborhood, budget) -> None:
         self.neighborhood = neighborhood
         self.attributes = {i: random.gauss(neighborhood.preferences[i], neighborhood.cohesion) for i in range(4)}
         self.required_approval = 0
         self.project_approvals = {}
         self.approves = []
         self.rankings = []
+        self.budget = budget
         Person.INSTANCES.append(self)
+        Person.NR_INSTANCES += 1
 
     def project_approval(self, projects):
         for project in projects:
@@ -77,18 +80,22 @@ class Project:
         return self.instance
 
 def main():
+    budget = 25000
     # Create 5 neighborhoods
     neighborhoods = []
     neighborhoods.append(Neighborhood(200, [0.4, 0.2, -0.1, -0.1], 0.3))
-    neighborhoods.append(Neighborhood(600, [0.2, -0.3, -0.2, 0.2], 0.6))
-    neighborhoods.append(Neighborhood(300, [0.6, -0.4, -0.3, 0.4], 0.2))
-    neighborhoods.append(Neighborhood(300, [-0.2, 0.4, 0.2, -0.3], 0.3))
-    neighborhoods.append(Neighborhood(500, [-0.1, 0.2, 0.3, -0.2], 0.4))
+    neighborhoods.append(Neighborhood(800, [0.2, -0.3, -0.2, 0.2], 0.5))
+    neighborhoods.append(Neighborhood(400, [-0.6, 0.4, 0.3, -0.4], 0.2))
+    neighborhoods.append(Neighborhood(400, [-0.2, 0.4, 0.2, -0.3], 0.3))
+    neighborhoods.append(Neighborhood(700, [0.1, -0.1, -0.3, 0.2], 0.4))
     nr_neighborhoods = len(neighborhoods)
+    for person in Person.INSTANCES:
+        person.budget = budget / Person.NR_INSTANCES
+
     print("Neighborhoods created")
 
     # Create projects
-    nr_projects = 10
+    nr_projects = 100
     projects = []
     size_probabilities = [0.4, 0.15, 0.05, 0.05, 0.3]
     possible_costs = [200, 500, 1000, 1500, 2000, 5000, 8000, 10000, None]
