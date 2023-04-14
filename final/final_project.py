@@ -11,7 +11,7 @@ class BallotType(Enum):
 
 # Class representing a neighborhood
 class Neighborhood:
-    def __init__(self, nr_inhabitants, preferences, cohesion, budget) -> None:
+    def __init__(self, nr_inhabitants, preferences, cohesion) -> None:
         self.preferences = preferences
         self.cohesion = cohesion
         self.inhabitants = [Person(self) for i in range(nr_inhabitants)]
@@ -22,7 +22,7 @@ class Neighborhood:
 class Person:
     INSTANCES = []
     NR_INSTANCES = 0
-    def __init__(self, neighborhood, budget) -> None:
+    def __init__(self, neighborhood) -> None:
         self.neighborhood = neighborhood
         self.attributes = {i: random.gauss(neighborhood.preferences[i], neighborhood.cohesion) for i in range(4)}
         self.required_approval = 0
