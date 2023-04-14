@@ -146,16 +146,15 @@ def equalshares(data,projects):
     profile = map(tuple,sorteddata)
     counts = Counter(profile)
     list_counts = [list(i) for i in counts.items()]
-    print(list_counts)
 
     scores = []
     supporters = []
     for idx in range(len(projects)):
         scores.append(projects[idx].cost/len(projects[idx].supporters))
         supporters.append(len(projects[idx].supporters))
-    print(scores) 
-    print(supporters)
     
+    choice = supporters.index(max(supporters))
+    scores[choice]
 
 
     return
