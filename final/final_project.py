@@ -61,8 +61,6 @@ class Person:
             return self.rankings
         elif ballot_type == BallotType.PARTIAL_RANKING:
             return [x for x in self.rankings if x in self.approves]
-    
-    def satisfaction(self, projects):
 
  
 # Class representing a project
@@ -107,7 +105,22 @@ def applyBudgetMaximally(outputSCF,budget):
 
     
 
-def main():
+def single_simulation():
+    welfares = {
+        "utalitarian": 0,
+        "chamberlin": 0,
+        "egalitarian": 0,
+        "nash": 0
+    }
+    scores = {
+        "plurality": welfares.copy(),
+        "stv": welfares.copy(),
+        "approval": welfares.copy(),
+        "condorcet": welfares.copy(),
+        "borda": welfares.copy(),
+        "copeland": welfares.copy(),
+        "equalshares": welfares.copy()
+    }
     budget = 25000
     nr_projects = 20
     # Create 5 neighborhoods
@@ -160,6 +173,7 @@ def main():
     partial_approval_profile = [x.get_ballot(BallotType.PARTIAL_RANKING) for x in Person.INSTANCES]
     #print(STV(partial_approval_profile,list(range(0,nr_projects))))
     equalshares(partial_approval_profile,Project.INSTANCES)
+
        
 if __name__=="__main__":
     main()

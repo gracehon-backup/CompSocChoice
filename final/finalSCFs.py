@@ -1,6 +1,10 @@
 from finalAux import *
 from collections import Counter
 
+# Contains the following SCF's
+
+
+
 def plurality(data, names, eliminations):
 
     """
