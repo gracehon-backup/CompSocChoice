@@ -37,6 +37,8 @@ class Person:
         self.rankings = sorted(self.project_approvals.items(), key=lambda x: x[1], reverse=True)
         self.rankings = [x.instance for x, _ in self.rankings]
         print(self.rankings)
+    
+    def get_ballot
 
 
 # Class representing a project
@@ -102,8 +104,6 @@ def main():
     for project in projects:
         print(f"Cost: {project.cost}, supporters: {len(project.supporters)}")
 
-
-    
 
 if __name__=="__main__":
     main()
