@@ -62,8 +62,8 @@ class Person:
 class Project:
     NR_INSTANCES = 0
     def __init__(self, attributes, neighborhoods, cost) -> None:
-        Project.NR_INSTANCES += 1
         self.instance = Project.NR_INSTANCES
+        Project.NR_INSTANCES += 1
         self.attributes = attributes
         self.neighborhoods = neighborhoods
         self.cost = cost
@@ -89,8 +89,8 @@ def main():
     # Create projects
     nr_projects = 10
     projects = []
-    size_probabilities = [0.3, 0.2, 0.1, 0.1, 0.3]
-    possible_costs = [50, 100, 200, 500, 1000, 2000, 5000, 10000]
+    size_probabilities = [0.4, 0.15, 0.05, 0.05, 0.3]
+    possible_costs = [200, 500, 1000, 1500, 2000, 5000, 8000, 10000, None]
     for i in range(nr_projects):
         # Pick a random number of neighborhoods to support the project
         project_size = random.random()
@@ -99,7 +99,6 @@ def main():
             if project_size < 0:
                 project_size = n+1
                 break
-        print(f"Project {i} has {project_size} neighborhoods")
         in_neighborhoods = []
         for _ in range(project_size):
             # Pick a random neighborhood to support the project
@@ -108,7 +107,9 @@ def main():
                 in_neighborhoods.append(neighborhood)
 
         # Create the project
-        project = Project([random.uniform(-1, 1) for _ in range(4)], neighborhoods, random.choice(possible_costs))
+        current_possible_costs = possible_costs[project_size-1: -6 + project_size]
+        project = Project([random.uniform(-1, 1) for _ in range(4)], neighborhoods, random.choice(current_possible_costs))
+        print(f"Project {i} of cost {project.cost} is spread over {project_size} neighborhoods")
         projects.append(project)
     print("Projects created")
 
