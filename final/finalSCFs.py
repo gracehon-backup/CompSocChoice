@@ -99,10 +99,13 @@ def condorcet(data,names):
                 candidate_wins[j][i] = 1
     
     results = []
-    for row in candidate_wins:
-        if sum(row) == len(names) - 1:
-            results.append(candidate_wins.index(row)) 
-            
+    i = 1
+    while len(results) == 0 and i < len(names):    
+        for row in candidate_wins:
+            if sum(row) == len(names) - i:
+                results.append(candidate_wins.index(row)) 
+        i += 1
+
     return results 
 
 def borda(data, names):
