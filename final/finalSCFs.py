@@ -1,7 +1,6 @@
-from finalAux import *
 from collections import Counter
 
-def plurality(data, names, eliminations=[]):
+def plurality(data, names, eliminations=[], standalone = False):
     """
     Plurality voting
     input:
@@ -42,6 +41,10 @@ def plurality(data, names, eliminations=[]):
     losers = [i for i in range(len(nr_votes)) if  nr_votes[i] == min_votes 
                                               and i not in winners]
 
+    if standalone:
+        losers.extend(winners)
+        return losers[::-1]
+    
     return winners, losers
 
 def STV(data, names, eliminations=[]):
@@ -96,14 +99,14 @@ def condorcet(data,names):
                 candidate_wins[j][i] = 1
     
     results = []
-    condorcet_winner_exists = False
+    # condorcet_winner_exists = False
     for row in candidate_wins:
         results.append(sum(row))
-        if sum(row) == len(names) - 1:
-            print(f"Condorcet winner = {candidate_wins.index(row)}")
-            condorcet_winner_exists = True
-    if not condorcet_winner_exists:
-        print("No True Condorcet winner exists")
+    #     if sum(row) == len(names) - 1:
+    #         print(f"Condorcet winner = {candidate_wins.index(row)}")
+    #         condorcet_winner_exists = True
+    # if not condorcet_winner_exists:
+    #     print("No True Condorcet winner exists")
 
     return([x[1] for x in sorted(((value, index) for index, value in enumerate(results)), reverse=True)])
 
@@ -149,4 +152,5 @@ def equalshares(projects):
             winners.append(choice)
         scores[choice] = 100000
         choice = scores.index(min(scores))
+    
     return winners

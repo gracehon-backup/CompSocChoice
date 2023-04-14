@@ -100,20 +100,10 @@ class Project:
                     self.supporters.remove(person)
             min_budget = min([x.budget for x in self.supporters])
             budget_per_person = self.cost / len(self.supporters)
-        
-        
-
-def applyBudget(outputSCF,budget):
-    affordable_projects = []
-    for project in outputSCF:
-        budget -= Project.INSTANCES[project].cost
-        if budget < 0:
-            return affordable_projects
-        affordable_projects.append(project)
-    return affordable_projects
 
 def applyBudgetMaximally(outputSCF,budget):
     affordable_projects = []
+    print(outputSCF)
     for project in outputSCF:
         if ((budget - Project.INSTANCES[project].cost) < 0):
             continue
@@ -186,8 +176,16 @@ def single_simulation():
         print(f"Project {project.instance} has {len(project.supporters)} supporters")
 
     partial_approval_profile = [x.get_ballot(BallotType.PARTIAL_RANKING) for x in Person.INSTANCES]
-    #print(STV(partial_approval_profile,list(range(0,nr_projects))))
-    equalshares(Project.INSTANCES)
+
+    applyBudgetMaximally(plurality(partial_approval_profile,list(range(0,nr_projects)),standalone=True),budget)
+    applyBudgetMaximally(STV(partial_approval_profile,list(range(0,nr_projects))),budget)
+    applyBudgetMaximally(approval(partial_approval_profile,list(range(0,nr_projects))),budget)
+    applyBudgetMaximally(condorcet(partial_approval_profile,list(range(0,nr_projects))),budget)
+    applyBudgetMaximally(borda(partial_approval_profile,list(range(0,nr_projects))),budget)
+    applyBudgetMaximally(copeland(partial_approval_profile,list(range(0,nr_projects))),budget)
+    applyBudgetMaximally(equalshares(Project.INSTANCES),budget)
+
+    
        
 if __name__=="__main__":
     welfares = {
