@@ -63,9 +63,11 @@ class Person:
  
 # Class representing a project
 class Project:
+    INSTANCES = []
     NR_INSTANCES = 0
     def __init__(self, attributes, neighborhoods, cost) -> None:
         self.instance = Project.NR_INSTANCES
+        Project.INSTANCES.append(self)
         Project.NR_INSTANCES += 1
         self.attributes = attributes
         self.neighborhoods = neighborhoods
@@ -80,13 +82,14 @@ class Project:
 
 def main():
     budget = 25000
+    nr_projects = 100
     # Create 5 neighborhoods
     neighborhoods = []
-    neighborhoods.append(Neighborhood(200, [0.4, 0.2, -0.1, -0.1], 0.3))
-    neighborhoods.append(Neighborhood(800, [0.2, -0.3, -0.2, 0.2], 0.5))
+    neighborhoods.append(Neighborhood(200, [0.4, 0.2, 0.1, -0.1], 0.1))
+    neighborhoods.append(Neighborhood(800, [0.2, -0.3, 0.2, 0.2], 0.5))
     neighborhoods.append(Neighborhood(400, [-0.6, 0.4, 0.3, -0.4], 0.2))
     neighborhoods.append(Neighborhood(400, [-0.2, 0.4, 0.2, -0.3], 0.3))
-    neighborhoods.append(Neighborhood(700, [0.1, -0.1, -0.3, 0.2], 0.4))
+    neighborhoods.append(Neighborhood(700, [0.1, -0.1, 0.1, 0.2], 0.4))
     nr_neighborhoods = len(neighborhoods)
     for person in Person.INSTANCES:
         person.budget = budget / Person.NR_INSTANCES
@@ -94,7 +97,6 @@ def main():
     print("Neighborhoods created")
 
     # Create projects
-    nr_projects = 100
     projects = []
     size_probabilities = [0.4, 0.2, 0.05, 0.05, 0.3]
     possible_costs = [200, 500, 1000, 1500, 2000, 5000, 8000, 10000, None]
