@@ -55,7 +55,7 @@ class Person:
         self.rankings = sorted(self.project_approvals.items(), key=lambda x: x[1], reverse=True)
         self.rankings = [x.instance for x, _ in self.rankings]
         for k, v in self.project_approvals.items():
-            self.project_approvals[k] = max(0, min(1, v + 1))
+            self.project_approvals[k] = max(0, min(1, v))
 
     
     def get_ballot(self, ballot_type: BallotType):
@@ -114,7 +114,6 @@ class Project:
 
 def applyBudgetMaximally(outputSCF,budget):
     affordable_projects = []
-    print(outputSCF)
     for project in outputSCF:
         if ((budget - Project.INSTANCES[project].cost) < 0):
             continue
@@ -151,8 +150,6 @@ def single_simulation():
     for person in Person.INSTANCES:
         person.budget = budget / Person.NR_INSTANCES
 
-    print("Neighborhoods created")
-
     # Create projects
     projects = []
     size_probabilities = [0.4, 0.2, 0.05, 0.05, 0.3]
@@ -175,22 +172,18 @@ def single_simulation():
         # Create the project
         current_possible_costs = possible_costs[project_size-1: -6 + project_size]
         project = Project([random.uniform(-1, 1) for _ in range(4)], neighborhoods, random.choice(current_possible_costs))
-        print(f"Project {i} of cost {project.cost} is spread over {project_size} neighborhoods")
         projects.append(project)
-    print("Projects created")
 
     # Have each person project their approval for each project
     for person in Person.INSTANCES:
         person.project_approval(projects)
 
-    for project in projects:
-        print(f"Project {project.instance} has {len(project.supporters)} supporters")
-
     partial_approval_profile = [x.get_ballot(BallotType.PARTIAL_RANKING) for x in Person.INSTANCES]
+    full_approval_profile = [x.get_ballot(BallotType.FULL_RANKING) for x in Person.INSTANCES]
 
     choices = {
         "plurality": applyBudgetMaximally(plurality(partial_approval_profile.copy(),list(range(0,nr_projects)),standalone=True),budget),
-        # "stv": applyBudgetMaximally(STV(partial_approval_profile.copy(), list(range(0,nr_projects))),budget),
+        "stv": applyBudgetMaximally(STV(full_approval_profile.copy(), list(range(0,nr_projects)), eliminations=[]),budget),
         "approval": applyBudgetMaximally(approval(partial_approval_profile.copy(), list(range(0,nr_projects))),budget),
         "condorcet": applyBudgetMaximally(condorcet(partial_approval_profile.copy(), list(range(0,nr_projects))),budget),
         "borda": applyBudgetMaximally(borda(partial_approval_profile.copy(), list(range(0,nr_projects))),budget),
@@ -200,14 +193,17 @@ def single_simulation():
 
     for key, value in choices.items():
         projects = [Project.INSTANCES[x] for x in value]
-        print(utalitarian_welfare(Person.INSTANCES, projects))
-        results[key]["utalitarian"] = utalitarian_welfare(Person.INSTANCES, projects)
-        results[key]["chamberlin"] = chamberlin_courant_welfare(Person.INSTANCES, projects)
-        results[key]["egalitarian"] = egalitarian_social_welfare(Person.INSTANCES, projects)
-        results[key]["nash"] = nash_welfare(Person.INSTANCES, projects)
-    
+        results[key]["utalitarian"] = utalitarian_welfare(Person.INSTANCES, choices[key])
+        results[key]["chamberlin"] = chamberlin_courant_welfare(Person.INSTANCES, choices[key])
+        results[key]["egalitarian"] = egalitarian_social_welfare(Person.INSTANCES, choices[key])
+        results[key]["nash"] = nash_welfare(Person.INSTANCES, choices[key])
     return results
        
+
+def copy_dict(dic):
+    return {k: v.copy() for k,v in dic.items()}
+
+
 if __name__=="__main__":
     welfares = {
         "utalitarian": [],
@@ -216,17 +212,18 @@ if __name__=="__main__":
         "nash": [] 
     }
     results = {
-        "plurality": welfares.copy(),
-        "stv": welfares.copy(),
-        "approval": welfares.copy(),
-        "condorcet": welfares.copy(),
-        "borda": welfares.copy(),
-        "copeland": welfares.copy(),
-        "equalshares": welfares.copy()
+        "plurality": copy_dict(welfares.copy()),
+        "stv": copy_dict(welfares.copy()),
+        "approval": copy_dict(welfares.copy()),
+        "condorcet": copy_dict(welfares.copy()),
+        "borda": copy_dict(welfares.copy()),
+        "copeland": copy_dict(welfares.copy()),
+        "equalshares": copy_dict(welfares.copy())
     }
 
-    nr_simulations = 3
+    nr_simulations = 1000
     for i in range(nr_simulations):
+        print(f"Simulation {i+1}/{nr_simulations}", end="\r")
         Person.reset()
         Project.reset()
         result = single_simulation()
@@ -237,7 +234,3 @@ if __name__=="__main__":
     for key, value in results.items():
         for key2, value2 in value.items():
             print(f"{key} {key2}\t Mean:{mean(value2)}, std:{std(value2)}")
-    
-    for k,v in results:
-        print("{k}")
-

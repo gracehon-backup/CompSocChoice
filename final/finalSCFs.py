@@ -27,8 +27,6 @@ def plurality(data, names, eliminations=[], standalone = False):
                 nr_votes[candidate] += 1                        # Add vote to single candidate
                 break
 
-    print(f"Eliminations {eliminations}")
-    print(nr_votes)
     # Find the winners and losers
     max_votes = max([i for i in nr_votes if nr_votes.index(i) not in eliminations])               # max(nr_votes) belongs to winner
     winners = [i for i in range(len(nr_votes)) if nr_votes[i] == max_votes]       # Find index of winners
