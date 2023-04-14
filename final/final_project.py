@@ -188,6 +188,7 @@ def single_simulation():
     partial_approval_profile = [x.get_ballot(BallotType.PARTIAL_RANKING) for x in Person.INSTANCES]
     #print(STV(partial_approval_profile,list(range(0,nr_projects))))
     equalshares(Project.INSTANCES)
+    
        
 if __name__=="__main__":
     welfares = {
