@@ -55,10 +55,10 @@ def STV(data, names, eliminations=[]):
         eliminations: list of ints (candidates to be eliminated)
     """
     winners, losers = plurality(data, names, eliminations)
-    eliminations += losers 
-    print(eliminations)                                     # Add the eliminated candidates to the list of eliminations
+    eliminations += losers                                     # Add the eliminated candidates to the list of eliminations
     if len(losers) == 0: 
-        return winners                                          # No more candidates to eliminate, final round
+        eliminations.extend(winners)
+        return eliminations[::-1]                                          # No more candidates to eliminate, final round
     return STV(data, names, eliminations) 
 
 def approval(data,names):

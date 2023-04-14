@@ -1,3 +1,5 @@
+from final_project import Project
+
 def filter(data):
     return [[vote[0] for vote in ballot if vote[1] > 0 ] for ballot in order(data)]
 
@@ -37,3 +39,20 @@ def checkrank(ballot, a, b):
     else:
         return 0
     
+def applyBudget(outputSCF,budget):
+    affordable_projects = []
+    for project in outputSCF:
+        budget -= Project.INSTANCES[project].cost
+        if budget < 0:
+            return affordable_projects
+        affordable_projects.append(project)
+    return affordable_projects
+
+def applyBudgetMaximally(outputSCF,budget):
+    affordable_projects = []
+    for project in outputSCF:
+        if ((budget - Project.INSTANCES[project].cost) < 0):
+            continue
+        budget -= Project.INSTANCES[project].cost
+        affordable_projects.append(project)
+    return affordable_projects

@@ -80,6 +80,24 @@ class Project:
     def __str__(self) -> str:
         return self.instance
 
+def applyBudget(outputSCF,budget):
+    affordable_projects = []
+    for project in outputSCF:
+        budget -= Project.INSTANCES[project].cost
+        if budget < 0:
+            return affordable_projects
+        affordable_projects.append(project)
+    return affordable_projects
+
+def applyBudgetMaximally(outputSCF,budget):
+    affordable_projects = []
+    for project in outputSCF:
+        if ((budget - Project.INSTANCES[project].cost) < 0):
+            continue
+        budget -= Project.INSTANCES[project].cost
+        affordable_projects.append(project)
+    return affordable_projects
+
 def main():
     budget = 25000
     nr_projects = 100
@@ -130,11 +148,8 @@ def main():
         print(f"Project {project.instance} has {len(project.supporters)} supporters")
 
     partial_approval_profile = [x.get_ballot(BallotType.PARTIAL_RANKING) for x in Person.INSTANCES]
-    print(partial_approval_profile[1])
-    print(len(partial_approval_profile))
-    print(STV(partial_approval_profile,[0,1,2,3,4,5,6,7,8,9]))
+    print(STV(partial_approval_profile,list(range(0,nr_projects))))
 
-    
-
+       
 if __name__=="__main__":
     main()
