@@ -1,7 +1,7 @@
 from finalAux import *
 from collections import Counter
 
-def plurality(data, names, eliminations):
+def plurality(data, names, eliminations=[]):
 
     """
     Plurality voting
@@ -44,7 +44,6 @@ def plurality(data, names, eliminations):
                                               and i not in winners]
 
     return winners, losers
-
 
 def STV(data, names, eliminations=[]):
 
@@ -157,6 +156,6 @@ def equalshares(data,projects):
     print(scores) 
     print(supporters)
     
-    
+
 
     return
