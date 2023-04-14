@@ -2,6 +2,7 @@ import random
 from enum import Enum
 from finalSCFs import *
 from welfares import *
+from numpy import std, mean
 
 random.seed(1)
 
@@ -53,6 +54,9 @@ class Person:
         # Sort the projects by approval
         self.rankings = sorted(self.project_approvals.items(), key=lambda x: x[1], reverse=True)
         self.rankings = [x.instance for x, _ in self.rankings]
+        for k, v in self.project_approvals:
+            self.project_approvals[k] = max(0, min(1, v + 1))
+
     
     def get_ballot(self, ballot_type: BallotType):
         if ballot_type == BallotType.APPROVAL:
@@ -85,6 +89,20 @@ class Project:
     def is_affordable(self) -> bool:
         return sum([x.budget for x in self.supporters]) >= self.cost
 
+    def pick_in_equal_shares(self):
+        budget_per_person = self.cost / len(self.supporters)
+        min_budget = min([x.budget for x in self.supporters])
+        while min_budget < budget_per_person:
+            self.cost -= len(self.supporters) * min_budget
+            for person in self.supporters:
+                person.budget -= min_budget
+                if person.budget <= 0:
+                    self.supporters.remove(person)
+            min_budget = min([x.budget for x in self.supporters])
+            budget_per_person = self.cost / len(self.supporters)
+        
+        
+
 def applyBudget(outputSCF,budget):
     affordable_projects = []
     for project in outputSCF:
@@ -105,14 +123,15 @@ def applyBudgetMaximally(outputSCF,budget):
 
     
 
-def single_simulation():
+def single_simulation(score_dict):
+    
     welfares = {
         "utalitarian": 0,
         "chamberlin": 0,
         "egalitarian": 0,
-        "nash": 0
+        "nash": 0 
     }
-    scores = {
+    results = {
         "plurality": welfares.copy(),
         "stv": welfares.copy(),
         "approval": welfares.copy(),
@@ -176,4 +195,31 @@ def single_simulation():
 
        
 if __name__=="__main__":
-    main()
+    welfares = {
+        "utalitarian": [],
+        "chamberlin": [],
+        "egalitarian": [],
+        "nash": [] 
+    }
+    results = {
+        "plurality": welfares.copy(),
+        "stv": welfares.copy(),
+        "approval": welfares.copy(),
+        "condorcet": welfares.copy(),
+        "borda": welfares.copy(),
+        "copeland": welfares.copy(),
+        "equalshares": welfares.copy()
+    }
+
+    nr_simulations = 100
+    for i in range(nr_simulations):
+        result = single_simulation()
+        for key, value in result.items():
+            for key2, value2 in value.items():
+                results[key][key2].append(value2)
+    
+    for key, value in results.items():
+        for key2, value2 in value.items():
+            print(f"{key} {key2}\t Mean:{mean(value2)}, std:{std(value2)}")
+    
+
