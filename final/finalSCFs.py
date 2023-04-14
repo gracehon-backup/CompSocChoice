@@ -2,7 +2,6 @@ from finalAux import *
 from collections import Counter
 
 def plurality(data, names, eliminations=[]):
-
     """
     Plurality voting
     input:
