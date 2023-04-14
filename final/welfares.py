@@ -1,4 +1,7 @@
 
+"""
+This module contains the functions for calculating the different welfare functions.
+"""
 
 def utalitarian_welfare(persons, projects):
     """Return the utilitarian welfare of a list of satisfactions."""

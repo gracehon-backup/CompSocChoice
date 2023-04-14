@@ -65,6 +65,11 @@ class Person:
             return self.rankings
         elif ballot_type == BallotType.PARTIAL_RANKING:
             return [x for x in self.rankings if x in self.approves]
+    
+    @staticmethod
+    def reset():
+        Person.INSTANCES = []
+        Person.NR_INSTANCES = 0
 
  
 # Class representing a project
@@ -100,20 +105,16 @@ class Project:
                     self.supporters.remove(person)
             min_budget = min([x.budget for x in self.supporters])
             budget_per_person = self.cost / len(self.supporters)
-        
-        
 
-def applyBudget(outputSCF,budget):
-    affordable_projects = []
-    for project in outputSCF:
-        budget -= Project.INSTANCES[project].cost
-        if budget < 0:
-            return affordable_projects
-        affordable_projects.append(project)
-    return affordable_projects
+
+    @staticmethod
+    def reset():
+        Project.INSTANCES = []
+        Project.NR_INSTANCES = 0
 
 def applyBudgetMaximally(outputSCF,budget):
     affordable_projects = []
+    print(outputSCF)
     for project in outputSCF:
         if ((budget - Project.INSTANCES[project].cost) < 0):
             continue
@@ -186,9 +187,26 @@ def single_simulation():
         print(f"Project {project.instance} has {len(project.supporters)} supporters")
 
     partial_approval_profile = [x.get_ballot(BallotType.PARTIAL_RANKING) for x in Person.INSTANCES]
-    #print(STV(partial_approval_profile,list(range(0,nr_projects))))
-    equalshares(Project.INSTANCES)
+
+    choices = {
+        "plurality": applyBudgetMaximally(plurality(partial_approval_profile.copy(),list(range(0,nr_projects)),standalone=True),budget),
+        # "stv": applyBudgetMaximally(STV(partial_approval_profile.copy(), list(range(0,nr_projects))),budget),
+        "approval": applyBudgetMaximally(approval(partial_approval_profile.copy(), list(range(0,nr_projects))),budget),
+        "condorcet": applyBudgetMaximally(condorcet(partial_approval_profile.copy(), list(range(0,nr_projects))),budget),
+        "borda": applyBudgetMaximally(borda(partial_approval_profile.copy(), list(range(0,nr_projects))),budget),
+        "copeland": applyBudgetMaximally(copeland(partial_approval_profile.copy(), list(range(0,nr_projects))),budget),
+        "equalshares": applyBudgetMaximally(equalshares(Project.INSTANCES),budget)
+    }
+
+    for key, value in choices.items():
+        projects = [Project.INSTANCES[x] for x in value]
+        print(utalitarian_welfare(Person.INSTANCES, projects))
+        results[key]["utalitarian"] = utalitarian_welfare(Person.INSTANCES, projects)
+        results[key]["chamberlin"] = chamberlin_courant_welfare(Person.INSTANCES, projects)
+        results[key]["egalitarian"] = egalitarian_social_welfare(Person.INSTANCES, projects)
+        results[key]["nash"] = nash_welfare(Person.INSTANCES, projects)
     
+    return results
        
 if __name__=="__main__":
     welfares = {
@@ -207,8 +225,10 @@ if __name__=="__main__":
         "equalshares": welfares.copy()
     }
 
-    nr_simulations = 100
+    nr_simulations = 3
     for i in range(nr_simulations):
+        Person.reset()
+        Project.reset()
         result = single_simulation()
         for key, value in result.items():
             for key2, value2 in value.items():
@@ -218,4 +238,6 @@ if __name__=="__main__":
         for key2, value2 in value.items():
             print(f"{key} {key2}\t Mean:{mean(value2)}, std:{std(value2)}")
     
+    for k,v in results:
+        print("{k}")
 
