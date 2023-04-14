@@ -46,7 +46,7 @@ class Person:
                 self.approves.append(project.instance)
             
             self.project_approvals[project] = approval
-        if len(self.project_approvals) == 0:
+        if len(self.approves) == 0:
             self.required_approval -= 0.1
             self.project_approval(projects)
             return
@@ -54,7 +54,7 @@ class Person:
         # Sort the projects by approval
         self.rankings = sorted(self.project_approvals.items(), key=lambda x: x[1], reverse=True)
         self.rankings = [x.instance for x, _ in self.rankings]
-        for k, v in self.project_approvals:
+        for k, v in self.project_approvals.items():
             self.project_approvals[k] = max(0, min(1, v + 1))
 
     
@@ -121,8 +121,7 @@ def applyBudgetMaximally(outputSCF,budget):
         affordable_projects.append(project)
     return affordable_projects
 
-def single_simulation(score_dict):
-    
+def single_simulation():
     welfares = {
         "utalitarian": 0,
         "chamberlin": 0,
