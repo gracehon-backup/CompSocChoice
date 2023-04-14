@@ -55,7 +55,8 @@ def STV(data, names, eliminations=[]):
         eliminations: list of ints (candidates to be eliminated)
     """
     winners, losers = plurality(data, names, eliminations)
-    eliminations += losers                                      # Add the eliminated candidates to the list of eliminations
+    eliminations += losers 
+    print(eliminations)                                     # Add the eliminated candidates to the list of eliminations
     if len(losers) == 0: 
         return winners                                          # No more candidates to eliminate, final round
     return STV(data, names, eliminations) 
@@ -68,7 +69,7 @@ def approval(data,names):
         for vote in ballot:
             nr_votes[vote] += 1                                 # everytime someone approved, they gain a vote
 
-    return([idx for idx, votes in enumerate(nr_votes) if votes == max(nr_votes)]) # return winner
+    return([x[1] for x in sorted(((value, index) for index, value in enumerate(nr_votes)), reverse=True)]) # return winner
 
 def condorcet(data,names):
 
@@ -96,10 +97,16 @@ def condorcet(data,names):
                 candidate_wins[j][i] = 1
     
     results = []
+    condorcet_winner_exists = False
     for row in candidate_wins:
         results.append(sum(row))
-    
-    
+        if sum(row) == len(names) - 1:
+            print(f"True Condorcet winner = {candidate_wins.index(row)}")
+            condorcet_winner_exists = True
+    if not condorcet_winner_exists:
+        print("No True Condorcet winner exists")
+
+    return([x[1] for x in sorted(((value, index) for index, value in enumerate(results)), reverse=True)])
 
     # for row in candidate_wins:           # find candidate that one against all others
     #     if sum(row) == len(names) - 1:
