@@ -1,5 +1,6 @@
 import random
 from enum import Enum
+from finalSCFs import *
 
 random.seed(1)
 
@@ -119,10 +120,12 @@ def main():
 
     for project in projects:
         print(f"Project {project.instance} has {len(project.supporters)} supporters")
-    
-    print(Person.INSTANCES[100].get_ballot(BallotType.APPROVAL))
-    print(Person.INSTANCES[100].get_ballot(BallotType.FULL_RANKING))
-    print(Person.INSTANCES[100].get_ballot(BallotType.PARTIAL_RANKING))
+
+    partial_approval_profile = [x.get_ballot(BallotType.PARTIAL_RANKING) for x in Person.INSTANCES]
+    print(partial_approval_profile[1])
+    print(len(partial_approval_profile))
+    print(borda(partial_approval_profile,[0,1,2,3,4,5,6,7,8,9]))
+
     
 
 if __name__=="__main__":

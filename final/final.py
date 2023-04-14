@@ -11,9 +11,9 @@ if __name__ == "__main__":
     names = [0,1,2,3]
 
     print(filter(data))
-    print(f"STV: {STV(filter(data),names)}")
-    print(f"Plurality: {plurality(filter(data),names,[])[0]}")
-    print(f"Approval: {approval(filter(data),names)}")
-    print(f"Condorcet: {condorcet(filter(data),names)}")
+#     print(f"STV: {STV(filter(data),names)}")
+#     print(f"Plurality: {plurality(filter(data),names,[])[0]}")
+#     print(f"Approval: {approval(filter(data),names)}")
+#     print(f"Condorcet: {condorcet(filter(data),names)}")
     print(f"Borda: {borda(filter(data),names)}")
     print(f"Copeland: {copeland(filter(data),names)}")
