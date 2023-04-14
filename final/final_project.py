@@ -29,7 +29,6 @@ class Person:
         self.project_approvals = {}
         self.approves = []
         self.rankings = []
-        self.budget = budget
         Person.INSTANCES.append(self)
         Person.NR_INSTANCES += 1
 
@@ -97,7 +96,7 @@ def main():
     # Create projects
     nr_projects = 100
     projects = []
-    size_probabilities = [0.4, 0.15, 0.05, 0.05, 0.3]
+    size_probabilities = [0.4, 0.2, 0.05, 0.05, 0.3]
     possible_costs = [200, 500, 1000, 1500, 2000, 5000, 8000, 10000, None]
     for i in range(nr_projects):
         # Pick a random number of neighborhoods to support the project
