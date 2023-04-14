@@ -4,9 +4,9 @@ from enum import Enum
 random.seed(1)
 
 class BallotType(Enum):
-    APPROVAL: 1
-    FULL_RANKING: 2
-    PARTIAL_RANKING: 3
+    APPROVAL = 1
+    FULL_RANKING = 2
+    PARTIAL_RANKING = 3
 
 # Class representing a neighborhood
 class Neighborhood:
@@ -23,7 +23,7 @@ class Person:
     def __init__(self, neighborhood) -> None:
         self.neighborhood = neighborhood
         self.attributes = {i: random.gauss(neighborhood.preferences[i], neighborhood.cohesion) for i in range(4)}
-        self.required_approval = random.uniform(0, 0.5)
+        self.required_approval = 0
         self.project_approvals = {}
         self.approves = []
         self.rankings = []
@@ -42,6 +42,8 @@ class Person:
             self.project_approvals[project] = approval
         if len(self.project_approvals) == 0:
             self.required_approval -= 0.1
+            self.project_approval(projects)
+            return
 
         # Sort the projects by approval
         self.rankings = sorted(self.project_approvals.items(), key=lambda x: x[1], reverse=True)
@@ -116,6 +118,10 @@ def main():
 
     for project in projects:
         print(f"Project {project.instance} has {len(project.supporters)} supporters")
+    
+    print(Person.INSTANCES[100].get_ballot(BallotType.APPROVAL))
+    print(Person.INSTANCES[100].get_ballot(BallotType.FULL_RANKING))
+    print(Person.INSTANCES[100].get_ballot(BallotType.PARTIAL_RANKING))
     
 
 if __name__=="__main__":
